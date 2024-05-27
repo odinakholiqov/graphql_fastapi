@@ -14,9 +14,7 @@ def get_hello():
 class Query:
     hello: str = strawberry.field(resolver=get_hello, description=None, name=None)
 
-    @strawberry.field(
-        description="Playlists hand-picked to be featured to all users."
-    )
+    @strawberry.field(description="Playlists hand-picked to be featured to all users.")
     async def featured_playlist(self, info: strawberry.Info) -> list[Playlist]:
         spotify_client = info.context["spotify_client"]
         data = await get_featured_playlists.asyncio(client=spotify_client)
@@ -42,7 +40,7 @@ class Query:
                 id=strawberry.ID(data.id),
                 name=data.name,
                 description=data.description,
-                tracks=[
+                _tracks=[
                     Track(
                         id=strawberry.ID(item.track.id),
                         name=item.track.name,
@@ -56,6 +54,8 @@ class Query:
 
         return None
     
+
+
 """
 The above class is equal to the following GraphQL schema
 
