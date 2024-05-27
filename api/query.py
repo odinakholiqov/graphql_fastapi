@@ -1,7 +1,7 @@
 import strawberry
 from .types.playlist import Playlist
 from mock_spotify_rest_api_client.api.playlists import get_featured_playlists
-
+from mock_spotify_rest_api_client.api.playlists import get_playlist
 
 def get_hello():
     return "Hello!"
@@ -30,6 +30,20 @@ class Query:
         
         return playlists
 
+    @strawberry.field(description="Retrieves a specific playlist.")
+    async def playlist(self, id: strawberry.ID, info: strawberry.Info) -> Playlist | None:
+        spotify_client = info.context["spotify_client"]
+        data = await get_playlist.asyncio(client=spotify_client, playlist_id=id)
+
+        if data:
+            return Playlist(
+                id=strawberry.ID(data.id),
+                name=data.name,
+                description=data.description
+            )
+
+        return None
+    
 """
 The above class is equal to the following GraphQL schema
 
