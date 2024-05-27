@@ -1,7 +1,9 @@
 import strawberry
 from .types.playlist import Playlist
+from .types.track import Track
 from mock_spotify_rest_api_client.api.playlists import get_featured_playlists
 from mock_spotify_rest_api_client.api.playlists import get_playlist
+
 
 def get_hello():
     return "Hello!"
@@ -39,7 +41,17 @@ class Query:
             return Playlist(
                 id=strawberry.ID(data.id),
                 name=data.name,
-                description=data.description
+                description=data.description,
+                tracks=[
+                    Track(
+                        id=strawberry.ID(item.track.id),
+                        name=item.track.name,
+                        duration_ms=item.track.duration_ms,
+                        explicit=item.track.explicit,
+                        uri=item.track.uri
+                    )
+                    for item in data.tracks.items
+                ]
             )
 
         return None
